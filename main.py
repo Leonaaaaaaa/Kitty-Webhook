@@ -1,43 +1,39 @@
-import PIL.Image
 import webhook
 import requests
-import random
 from time import sleep
 
-def generate_image():
-    SIZE = 500
-    CELL_SIZE = 50
-
-    image = PIL.Image.new("RGB", (SIZE, SIZE), "white")
-    pixels = image.load()
-
-    for x in range(0, SIZE, CELL_SIZE):
-        for y in range(0, SIZE, CELL_SIZE):
-            color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-            for i in range(CELL_SIZE):
-                for j in range(CELL_SIZE):
-                    pixels[x+i, y+j] = color
-    return image
-
 def get_cat_image():
-    response = requests.get("https://cataas.com/cat?json=true")
-    img_id = response.json()["_id"]
+    try:
+        response = requests.get("https://cataas.com/cat?json=true")
+        img_id = response.json()["_id"]
 
-    url = f"https://cataas.com/cat/{img_id}"
-    return url
+        url = f"https://cataas.com/cat/{img_id}"
+        return url
+    except:
+        None
 
 
 
 def main():
+    SECONDS_BETWEEN_IMAGE = 60
+
     i = 0
     while True:
-        image = generate_image()
+        image = get_cat_image()
+
+        if image == None:
+            e = "error: Failed to obtain cat photo"
+            print(e)
+            webhook.execute_webhook(text=e)
+            sleep(SECONDS_BETWEEN_IMAGE)
+            continue
+
         image.save("image.png")
 
         webhook.execute_webhook(text=get_cat_image())
         i += 1
 
-        sleep(60)
+        sleep(SECONDS_BETWEEN_IMAGE)
 
 if __name__ == "__main__":
     main()
