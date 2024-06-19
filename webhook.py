@@ -7,11 +7,11 @@ def get_file(path: str) -> bytes:
 
 def execute_webhook(text: str = None, username: str = None, avatar_url: str = None, files: io.BytesIO = None, image_url: str = None) -> requests.Response:
     def get_token() -> str:
-        with open("KEYS/TOKEN.KEY", "r") as f:
+        with open("KEYS/TOKEN.TXT", "r") as f:
             return f.read().strip()
 
     def get_id() -> str:
-        with open("KEYS/ID.KEY", "r") as f:
+        with open("KEYS/ID.TXT", "r") as f:
             return f.read().strip()
     
     url = f"https://discordapp.com/api/webhooks/{get_id()}/{get_token()}"
